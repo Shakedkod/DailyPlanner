@@ -71,8 +71,6 @@ class _EditTaskPageState extends State<EditTaskPage>
         _selectedColor = Color(widget.task.colorCode);
         _selectedIcon = IconData(widget.task.iconCodePoint, fontFamily: 'MaterialIcons');
         _repeatOption = widget.task.repetition.substring(0, 1).toUpperCase() + widget.task.repetition.substring(1);
-        print(_repeatOption);
-        print(widget.task.repetition.startsWith("Custom"));
 
         if (widget.task.repetition.startsWith('Custom')) 
         {
@@ -498,8 +496,19 @@ class _EditTaskPageState extends State<EditTaskPage>
             task.repetition = 'Custom ${selectedDays.join(" ")}';
         }
 
-        deleteTask(widget.task);
-        tasksBox.add(task);
+        final Map<dynamic, Task> tasksMap = tasksBox.toMap();
+        tasksMap.forEach((k, v) {
+            if (v.taskId == widget.task.taskId && DateServices.isSameDay(v.date, widget.task.date)) 
+            {
+                setState(() {
+                    tasksBox.delete(k);
+                });
+            }
+        });
+
+        setState(() {
+            tasksBox.add(task);
+        });
     }
 
     void _updateAllFutureTasks()
@@ -509,6 +518,7 @@ class _EditTaskPageState extends State<EditTaskPage>
             .where((task) => task.taskId == widget.task.taskId && task.date.isAfter(_selectedDate))
             .toList();
         
+        List<Task> tasksToAdd = [];
         for (final task in tasks)
         {
             final newTask = Task(
@@ -538,8 +548,24 @@ class _EditTaskPageState extends State<EditTaskPage>
                 newTask.repetition = 'Custom ${selectedDays.join(" ")}';
             }
 
-            deleteTask(task);
-            tasksBox.add(newTask);
+            tasksToAdd.add(newTask);
+        }
+
+        final Map<dynamic, Task> tasksMap = tasksBox.toMap();
+        tasksMap.forEach((k, v) {
+            if (v.taskId == widget.task.taskId && v.date.isAfter(_selectedDate)) 
+            {
+                setState(() {
+                    tasksBox.delete(k);
+                });
+            }
+        });
+
+        for (final task in tasksToAdd)
+        {
+            setState(() {
+                tasksBox.add(task);
+            });
         }
 
         _updateSingleTask();
@@ -550,6 +576,30 @@ class _EditTaskPageState extends State<EditTaskPage>
         // check if the task has more instances and update them as well
         if (widget.task.repetition != 'Never') 
         {
+            showDialog(context: context, builder: (BuildContext context) {
+                return AlertDialog(
+                    title: const Text("Update all future tasks?"),
+                    content: const Text("Do you want to update all future tasks as well?"),
+                    actions: [
+                        TextButton(
+                            child: const Text('No'),
+                            onPressed: () {
+                                _updateSingleTask();
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                            },
+                        ),
+                        TextButton(
+                            child: const Text('Yes'),
+                            onPressed: () {
+                                _updateAllFutureTasks();
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                            },
+                        ),
+                    ],
+                );
+            });
             // open dialog to ask if the user wants to update all future tasks
             showDialog(
                 context: context,
