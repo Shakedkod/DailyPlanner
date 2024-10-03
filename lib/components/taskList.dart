@@ -104,15 +104,92 @@ class _TaskListState extends State<TaskList>
                     ),
                 ),
                 GestureDetector(
+                    child: const Icon(Icons.delete, color: Colors.red),
+                    onTap: () => _deleteTask(task),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
                     child: Icon(Icons.check_circle, color: Color(task.colorCode)),
                     onTap: () {
                         task.isCompleted = !task.isCompleted;
-                        task.save();
+                        // update the task without the put() method
+                        setState(() {
+                            final taskMap = tasksBox.toMap();
+                            taskMap.forEach((key, value) {
+                                    if (value.taskId == task.taskId && value.date == task.date)
+                                    {
+                                        tasksBox.put(key, task);
+                                    }
+                                });
+                        });
                     },
                 ),
                 const SizedBox(width: 16),
             ],
         );
+    }
+
+    void _deleteTask(Task task) 
+    {
+        // check if the task is a repeating task
+        if (task.repetition == "Never")
+        {
+            final taskMap = tasksBox.toMap();
+            taskMap.forEach((key, value) {
+                if (value.taskId == task.taskId && value.date == task.date)
+                {
+                    tasksBox.delete(key);
+                }
+            });
+        }
+        else
+        {
+            // show a dialog to confirm deletion
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                    title: const Text('Delete Task'),
+                    content: const Text('Do you want to delete'),
+                    actions: [
+                        TextButton(
+                            onPressed: () {
+                                final taskMap = tasksBox.toMap();
+                                taskMap.forEach((key, value) {
+                                    if (value.taskId == task.taskId && value.date == task.date)
+                                    {
+                                        tasksBox.delete(key);
+                                    }
+                                });
+                                Navigator.pop(context);
+                            },
+                            child: const Text('This Task Only'),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                                Navigator.pop(context);
+                                _deleteAllTasksWithSameTaskId(task);
+                            },
+                            child: const Text('All Tasks'),
+                        ),
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                        ),
+                    ],
+                ),
+            );
+        }
+    }
+
+    void _deleteAllTasksWithSameTaskId(Task task)
+    {
+        final taskMap = tasksBox.toMap();
+        taskMap.forEach((key, value) {
+            if (value.taskId == task.taskId)
+            {
+                tasksBox.delete(key);
+            }
+        });
     }
     
     Widget _buildColoredCircle(Task task, int colorCode, int iconCodePoint) 

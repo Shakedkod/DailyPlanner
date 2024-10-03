@@ -99,12 +99,6 @@ class Task
             tasksBox.add(task);
         }
     }
-
-    void save() 
-    {
-        final box = Hive.box<Task>('tasks');
-        box.put(key, this);
-    }
 }
 
 class TimeOfDayAdapter extends TypeAdapter<TimeOfDay> 

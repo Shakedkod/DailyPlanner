@@ -1,7 +1,6 @@
 import 'package:daily_planner/box.dart';
 import 'package:daily_planner/models/task.dart';
 import 'package:daily_planner/pages/addTaskPage.dart';
-import 'package:daily_planner/pages/editTaskPage.dart';
 import 'package:daily_planner/pages/homePage.dart';
 import 'package:daily_planner/services/dateServices.dart';
 import 'package:flutter/material.dart';
