@@ -30,4 +30,7 @@ class DateServices
     
     static bool isSameDay(DateTime date1, DateTime date2) =>
         date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    
+    static TimeOfDay getEndTime(TimeOfDay startTime, Duration duration) =>
+        TimeOfDay(hour: startTime.hour + duration.inHours, minute: startTime.minute + duration.inMinutes % 60);
 }

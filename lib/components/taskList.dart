@@ -35,7 +35,12 @@ class _TaskListState extends State<TaskList>
                 tasks.sort((a, b) => DateServices.compareTo(a.startTime, b.startTime));
 
                 if (tasks.isEmpty)
-                    return const Center(child: Text('No tasks for today'));
+                    return Center(
+                        child: Text(
+                            'No tasks for today',
+                            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.secondary),
+                        ),
+                    );
                 
                 return ListView.builder(
                     itemCount: tasks.length,
@@ -44,6 +49,7 @@ class _TaskListState extends State<TaskList>
                         final nextTask = index < tasks.length - 1 ? tasks[index + 1] : null;
 
                         return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                                 _buildTimeIndicator(task.startTime),
                                 _buildTaskItem(task),
@@ -57,8 +63,7 @@ class _TaskListState extends State<TaskList>
     }
 
     Widget _buildTimeIndicator(TimeOfDay time) {
-        return Padding(
-            padding: const EdgeInsets.only(left: 16.0),
+        return Center(
             child: Text(
                 time.format(context),
                 style: TextStyle(color: Colors.grey[600]),
@@ -104,7 +109,7 @@ class _TaskListState extends State<TaskList>
                     ),
                 ),
                 GestureDetector(
-                    child: const Icon(Icons.delete, color: Colors.red),
+                    child: Icon(Icons.delete, color: Color(task.colorCode)),
                     onTap: () => _deleteTask(task),
                 ),
                 const SizedBox(width: 16),
@@ -145,7 +150,7 @@ class _TaskListState extends State<TaskList>
         else
         {
             // show a dialog to confirm deletion
-            showDialog(
+            showDialog( 
                 context: context,
                 builder: (context) => AlertDialog(
                     title: const Text('Delete Task'),
@@ -215,11 +220,23 @@ class _TaskListState extends State<TaskList>
     
     Widget _buildConnector(Task currentTask, Task nextTask) 
     {
+        // calculate the height of the connector based on the difference in start times
+        final height = DateServices.calculateDuration(
+            DateServices.getEndTime(currentTask.startTime, currentTask.duration),
+            nextTask.startTime,
+        ).inMinutes.toDouble();
+
         return Container(
-            height: 30,
+            height: (height / 20) + 20,
             width: 2,
             margin: const EdgeInsets.only(left: 43),
-            color: Color(currentTask.colorCode),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(currentTask.colorCode), Color(nextTask.colorCode)],
+                )
+            ),
         );
     }
 

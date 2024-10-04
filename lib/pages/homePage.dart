@@ -27,7 +27,22 @@ class _MyHomePageState extends State<MyHomePage>
         return Scaffold(
             appBar: AppBar(
                 title: const Text('Weekly Schedule'),
+                centerTitle: true,
+                systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
+                titleTextStyle: Theme.of(context).appBarTheme.titleTextStyle,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                iconTheme: Theme.of(context).appBarTheme.iconTheme,
+                actions: [
+                    IconButton(
+                        onPressed: () {
+                            Navigator.pushNamed(context, '/settings');
+                        },
+                        icon: const Icon(Icons.settings),
+                    ),
+                ],
             ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: Column(
                 children: [
                     CustomDatePickerTimeline(
@@ -43,7 +58,14 @@ class _MyHomePageState extends State<MyHomePage>
                 onPressed: () {
                     Navigator.pushNamed(context, '/addTask');
                 },
-                child: const Icon(Icons.add),
+                backgroundColor: Theme.of(context).floatingActionButtonTheme.backgroundColor,
+                foregroundColor: Theme.of(context).floatingActionButtonTheme.foregroundColor,
+                focusColor: Theme.of(context).floatingActionButtonTheme.focusColor,
+                hoverColor: Theme.of(context).floatingActionButtonTheme.hoverColor,
+                splashColor: Theme.of(context).floatingActionButtonTheme.splashColor,
+                child: const Icon(
+                    Icons.add,
+                ),
             ),
         );
     }

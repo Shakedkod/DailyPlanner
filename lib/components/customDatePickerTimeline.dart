@@ -30,11 +30,16 @@ class _CustomDatePickerTimelineState extends State<CustomDatePickerTimeline> {
     @override
     Widget build(BuildContext context)
     {
+        Color selectedColor = Theme.of(context).colorScheme.primary;
+        final grayscale = (0.299 * selectedColor.red) + (0.587 * selectedColor.green) + (0.114 * selectedColor.blue);
+        Color selectedTextColor = grayscale > 128 ? Colors.black : Colors.white;
+
         return DatePicker(
             DateServices.mostRecentSunday(DateTime.now()),
             locale: "he_IL", // Set Hebrew locale
             initialSelectedDate: widget.selectedDate,
-            selectedTextColor: Colors.black,
+            selectionColor: Theme.of(context).colorScheme.primary,
+            selectedTextColor: Theme.of(context).colorScheme.onSurface,
             daysCount: DateTime.now().weekday > 4 ? 14 : 7,
             dayTextStyle: const TextStyle(fontSize: 12),
             dateTextStyle: const TextStyle(fontSize: 16),
